@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cho Tớ Xin Lỗi</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #ffd6e7, #ffeef5);
+        overflow: hidden;
+    }
+
+    .container {
+        margin-top: 40px;
+        position: relative;
+    }
+
+    video {
+        width: 90%;
+        max-width: 400px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2 { color: #ff2e88; }
+
+    button {
+        padding: 12px 22px;
+        font-size: 18px;
+        margin: 10px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #agree { background: #ff4da6; color: white; }
+    #disagree { background: #ddd; }
+
+    #arrow {
+        position: absolute;
+        font-size: 30px;
+        display: none;
+        animation: bounce 0.8s infinite;
+    }
+
+    #messageArea { margin-top: 20px; min-height: 60px; }
+
+    .gif { width: 200px; display: none; margin:auto; }
+
+    @keyframes bounce {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(6px); }
+        100% { transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <video id="video" controls>
+        <source src="video.mp4" type="video/mp4">
+    </video>
+
+    <div id="mainContent" style="display:none;">
+        <h2>Tui xin lỗi mà TT</h2>
+        <img id="cryGif" class="gif" src="cry.gif">
+        <img id="happyGif" class="gif" src="happy.gif">
+        <br>
+        <button id="agree">Đồng ý</button>
+        <button id="disagree">Không đồng ý</button>
+    </div>
+
+    <div id="arrow">↑</div>
+    <div id="messageArea"></div>
+
+</div>
+
+<script>
+let disagreeCount = 0;
+
+const video = document.getElementById("video");
+const mainContent = document.getElementById("mainContent");
+const agreeBtn = document.getElementById("agree");
+const disagreeBtn = document.getElementById("disagree");
+const messageArea = document.getElementById("messageArea");
+const cryGif = document.getElementById("cryGif");
+const happyGif = document.getElementById("happyGif");
+const arrow = document.getElementById("arrow");
+
+video.onended = () => {
+    video.style.display = "none"; // ẩn video
+    mainContent.style.display = "block";
+    cryGif.style.display = "block";
+};
+
+agreeBtn.onclick = () => {
+    cryGif.style.display = "none";
+    happyGif.style.display = "block";
+    messageArea.innerHTML = `
+        <h2>Tui biết lỗi rùi, lần sau hứa không tái phạm. Cảm ơn nhìu!!!</h2>
+    `;
+    arrow.style.display = "none";
+};
+
+function resetAll() {
+    disagreeCount = 0;
+    disagreeBtn.style.display = "inline-block";
+    disagreeBtn.style.transform = "scale(1)";
+    disagreeBtn.style.opacity = 1;
+    mainContent.style.display = "none";
+    messageArea.innerHTML = "";
+    cryGif.style.display = "none";
+    happyGif.style.display = "none";
+    arrow.style.display = "none";
+    video.style.display = "block";
+    video.currentTime = 0;
+    video.play();
+}
+
+function shrinkButton() {
+    let scale = 1 - (disagreeCount * 0.15);
+    if (scale > 0.1) {
+        disagreeBtn.style.transform = `scale(${scale})`;
+    } else {
+        disagreeBtn.style.opacity = 0;
+    }
+}
+
+function showArrowToDisagree() {
+    const rect = disagreeBtn.getBoundingClientRect();
+    arrow.style.left = rect.left + rect.width/2 - 10 + "px";
+    arrow.style.top = rect.top - 40 + "px";
+    arrow.style.display = "block";
+}
+
+function showFindButton() {
+    messageArea.innerHTML = `
+        <button onclick="replyStep1()" style="font-size:16px;padding:10px 18px;transform:scale(0.9);">
+            Nút không đồng ý ở đâu, chỉ ra! NHANH!
+        </button>
+    `;
+}
+
+disagreeBtn.onclick = () => {
+    disagreeCount++;
+
+    if (disagreeCount <= 5) {
+        shrinkButton();
+        return;
+    }
+
+    if (disagreeCount === 6) {
+        disagreeBtn.style.display = "none";
+        showFindButton();
+        return;
+    }
+};
+
+function replyStep1() {
+    messageArea.innerHTML = `
+        <p>bấm nút đồng ý đi mà, nó dễ kiếm hơn mà TT</p>
+        <button onclick="replyStep2()">Không đồng ý tiếp</button>
+    `;
+    disagreeBtn.style.display = "inline-block";
+    showArrowToDisagree(); // chỉ mũi tên vào nút không đồng ý
+}
+
+function replyStep2() {
+    disagreeBtn.style.display = "none";
+    arrow.style.display = "none";
+    messageArea.innerHTML = `
+        <p>Tui xin lỗi mà, tha lỗi cho tui đi mà TT</p>
+        <button onclick="replyStep3()">Nói tiếng nữa block</button>
+    `;
+}
+
+function replyStep3() {
+    messageArea.innerHTML = `
+        <p>xem lại lần nữa i, có khi bạn sẽ bớt giận hơn á. Cho tớ xin lũi ≧ ﹏ ≦</p>
+        <button onclick="resetAll()">Phát lại từ đầu</button>
+    `;
+}
+
+</script>
+
+</body>
+</html>
